@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { LogOut, LayoutDashboard, LogIn } from 'lucide-react';
+import { LogOut, LayoutDashboard, LogIn, Compass, Calculator } from 'lucide-react';
 
 export const Navigation = () => {
   const [user, setUser] = useState<any>(null);
@@ -32,7 +32,29 @@ export const Navigation = () => {
           Earth Resonance Wellness
         </h2>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 md:gap-3">
+          {/* Quiz & Calculator - Always visible */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/quiz')}
+            className="hidden sm:flex items-center gap-2"
+          >
+            <Compass className="w-4 h-4" />
+            <span className="hidden md:inline">Quiz</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/calculator')}
+            className="hidden sm:flex items-center gap-2"
+          >
+            <Calculator className="w-4 h-4" />
+            <span className="hidden md:inline">Savings</span>
+          </Button>
+          
+          <div className="h-6 w-px bg-border hidden sm:block" />
+          
           {user ? (
             <>
               <Button
@@ -42,7 +64,7 @@ export const Navigation = () => {
                 className="flex items-center gap-2"
               >
                 <LayoutDashboard className="w-4 h-4" />
-                My Leads
+                <span className="hidden md:inline">My Leads</span>
               </Button>
               <Button
                 variant="ghost"
@@ -51,7 +73,7 @@ export const Navigation = () => {
                 className="flex items-center gap-2"
               >
                 <LogOut className="w-4 h-4" />
-                Sign Out
+                <span className="hidden md:inline">Sign Out</span>
               </Button>
             </>
           ) : (
@@ -62,7 +84,7 @@ export const Navigation = () => {
               className="flex items-center gap-2"
             >
               <LogIn className="w-4 h-4" />
-              Login
+              <span className="hidden md:inline">Login</span>
             </Button>
           )}
         </div>
