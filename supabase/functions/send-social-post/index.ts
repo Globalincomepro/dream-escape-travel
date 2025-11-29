@@ -126,9 +126,8 @@ serve(async (req) => {
     // Get funnel slug
     const funnelSlug = funnel?.funnel_slug || 'default';
     
-    // Use YOUR custom domain here when you have one
-    // For now, we'll just use the caption without auto-adding a link
-    const appDomain = Deno.env.get('APP_DOMAIN') || '';
+    // Your live domain
+    const appDomain = Deno.env.get('APP_DOMAIN') || 'iluvmytravelclub.com';
     const funnelLink = appDomain 
       ? `https://${appDomain}/f/${funnelSlug}?ref=social&post_id=${post.id}`
       : '';
