@@ -86,46 +86,30 @@ const Index = () => {
           </h1>
           
           {/* Description */}
-          <p className="fade-in-delay-3 text-base sm:text-lg md:text-xl text-white/90 font-medium leading-relaxed max-w-3xl mx-auto text-center px-2 sm:px-0 mb-8">
+          <p className="fade-in-delay-3 text-base sm:text-lg md:text-xl text-white/90 font-medium leading-relaxed max-w-3xl mx-auto text-center px-2 sm:px-0 mb-6">
             We're Donna & Charles—a regular couple who cracked the code to luxury travel. 
-            Join our community and unlock <span className="text-yellow-400">wholesale prices</span> on 
-            five-star resorts worldwide.
+            We want to share our story with you...
           </p>
           
-          {/* CTA Buttons */}
-          <div className="fade-in-delay-4 flex flex-col sm:flex-row gap-4 mb-6">
+          {/* Scroll Prompt - Encourages reading the story first */}
+          <div className="fade-in-delay-4 flex flex-col items-center gap-3 mt-4">
+            <p className="text-white/70 text-sm tracking-widest uppercase">Discover Our Journey</p>
             <button 
-              onClick={() => document.getElementById('lead-form')?.scrollIntoView({ behavior: 'smooth' })} 
-              className="pulse-button px-8 py-4 bg-white text-primary text-lg font-bold rounded-xl hover:bg-white/95 transition-all shadow-2xl flex items-center justify-center gap-2"
+              onClick={() => document.getElementById('video-section')?.scrollIntoView({ behavior: 'smooth' })} 
+              className="group flex flex-col items-center gap-2 text-white/80 hover:text-white transition-all"
             >
-              <Play className="w-5 h-5 fill-primary" />
-              Watch Free Video
-            </button>
-            <button 
-              onClick={() => document.getElementById('how-we-do-it')?.scrollIntoView({ behavior: 'smooth' })} 
-              className="px-8 py-4 bg-transparent text-white text-lg font-semibold rounded-xl border-2 border-white/50 hover:bg-white/10 hover:border-white transition-all"
-            >
-              See How It Works
+              <span className="px-6 py-3 border-2 border-white/40 rounded-full text-base font-medium hover:bg-white/10 hover:border-white/70 transition-all flex items-center gap-2">
+                Read Our Story First
+                <ChevronDown className="w-5 h-5" />
+              </span>
             </button>
           </div>
 
-          {/* Trust Indicators */}
-          <div className="fade-in-delay-5 flex flex-wrap justify-center gap-4 sm:gap-6 text-white/70 text-xs sm:text-sm">
-            <span className="flex items-center gap-1">
-              <Shield className="w-4 h-4" /> No credit card required
-            </span>
-            <span className="flex items-center gap-1">
-              <Play className="w-4 h-4" /> 2-minute video
-            </span>
-            <span className="flex items-center gap-1">
-              <Star className="w-4 h-4" /> 100% free
-            </span>
-          </div>
-
-          {/* Scroll Indicator */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bounce-arrow">
+          {/* Animated Scroll Indicator */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bounce-arrow flex flex-col items-center gap-1">
+            <span className="text-white/50 text-xs tracking-wider">SCROLL</span>
             <button 
-              onClick={() => document.getElementById('lead-form')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => document.getElementById('video-section')?.scrollIntoView({ behavior: 'smooth' })}
               className="text-white/60 hover:text-white transition-colors"
             >
               <ChevronDown className="w-8 h-8" />
@@ -135,7 +119,7 @@ const Index = () => {
       </section>
 
       {/* Video Introduction Section */}
-      <section className="py-20 px-6 bg-background">
+      <section id="video-section" className="py-20 px-6 bg-background">
         <div className="max-w-4xl mx-auto text-center animate-in fade-in slide-in-from-bottom-8 duration-1000">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
             Before We Share Our Secret...
@@ -270,6 +254,29 @@ const Index = () => {
                   </p>
                 </div>
               </div>)}
+          </div>
+          
+          {/* Exciting CTA after story */}
+          <div className="mt-16 text-center">
+            <p className="text-muted-foreground mb-4">Ready to see how we do it?</p>
+            <button 
+              onClick={() => document.getElementById('lead-form')?.scrollIntoView({ behavior: 'smooth' })} 
+              className="pulse-button px-10 py-5 bg-primary text-white text-xl font-bold rounded-xl hover:bg-primary/90 transition-all shadow-2xl flex items-center justify-center gap-3 mx-auto"
+            >
+              <Play className="w-6 h-6 fill-white" />
+              Watch Our Free Video
+            </button>
+            <div className="flex flex-wrap justify-center gap-4 sm:gap-6 text-muted-foreground text-xs sm:text-sm mt-4">
+              <span className="flex items-center gap-1">
+                <Shield className="w-4 h-4" /> No credit card
+              </span>
+              <span className="flex items-center gap-1">
+                <Play className="w-4 h-4" /> 2-min video
+              </span>
+              <span className="flex items-center gap-1">
+                <Star className="w-4 h-4" /> 100% free
+              </span>
+            </div>
           </div>
         </div>
       </section>
