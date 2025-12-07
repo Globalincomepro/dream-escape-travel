@@ -7,7 +7,7 @@ import gallery1 from "@/assets/franceski.png";
 import gallery2 from "@/assets/france-village.png";
 import gallery3 from "@/assets/mexico-breakfast.png";
 import gallery4 from "@/assets/new-orleans-church.jpeg";
-import { Plane, DollarSign, Users, Sparkles } from "lucide-react";
+import { Plane, DollarSign, Users, Sparkles, Star, Shield, ChevronDown, Play } from "lucide-react";
 const Index = () => {
   const travelStories = [{
     src: gallery1,
@@ -47,28 +47,88 @@ const Index = () => {
       <Navigation />
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-contain bg-center bg-no-repeat" style={{
-        backgroundImage: `url(${heroImage})`
-      }}>
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
+        {/* Background with enhanced overlay */}
+        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105" style={{
+          backgroundImage: `url(${heroImage})`
+        }}>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
+          {/* Subtle animated gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-secondary/20 opacity-60" />
         </div>
         
-        <div className="relative z-10 w-full h-full flex flex-col justify-center items-center py-8 sm:py-12 px-4 sm:px-6 animate-in fade-in duration-1000">
-          {/* Headline and Description centered */}
-          <div className="text-center text-white max-w-4xl mx-auto">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-4 sm:mb-6 leading-tight animate-in fade-in slide-in-from-bottom duration-700">
-              Travel More. Spend Less. Live Better.
-            </h1>
-            
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/95 font-medium leading-relaxed px-2 sm:px-0">
-              We're Donna & Charles—a regular couple who cracked the code to luxury travel. Unlock wholesale travel prices and explore the world with a community of everyday people who want more adventure, more freedom, and more unforgettable memories.
-            </p>
-            
+        <div className="relative z-10 w-full h-full flex flex-col justify-center items-center py-8 sm:py-12 px-4 sm:px-6">
+          {/* Trust Badges - Floating at top */}
+          <div className="flex flex-wrap justify-center gap-3 sm:gap-6 mb-6 sm:mb-8 fade-in-delay-1">
+            <div className="float-badge flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 sm:px-4 py-2 rounded-full border border-white/20" style={{ animationDelay: '0s' }}>
+              <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+              <span className="text-white text-xs sm:text-sm font-medium">5,000+ Happy Travelers</span>
+            </div>
+            <div className="float-badge flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 sm:px-4 py-2 rounded-full border border-white/20" style={{ animationDelay: '0.5s' }}>
+              <DollarSign className="w-4 h-4 text-green-400" />
+              <span className="text-white text-xs sm:text-sm font-medium">Save up to 60%</span>
+            </div>
+            <div className="float-badge hidden sm:flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 sm:px-4 py-2 rounded-full border border-white/20" style={{ animationDelay: '1s' }}>
+              <Shield className="w-4 h-4 text-blue-400" />
+              <span className="text-white text-xs sm:text-sm font-medium">100% Risk Free</span>
+            </div>
+          </div>
+
+          {/* Hook Tagline */}
+          <p className="fade-in-delay-2 text-white/90 text-base sm:text-lg md:text-xl font-light tracking-wide mb-4 text-center">
+            What if your next vacation cost <span className="text-yellow-400 font-semibold">60% less</span>?
+          </p>
+
+          {/* Main Headline with Shimmer */}
+          <h1 className="fade-in-delay-2 shimmer-text text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-center mb-4 sm:mb-6 leading-tight tracking-tight">
+            Travel More. Spend Less.
+            <br />
+            <span className="text-white">Live Better.</span>
+          </h1>
+          
+          {/* Description */}
+          <p className="fade-in-delay-3 text-base sm:text-lg md:text-xl text-white/90 font-medium leading-relaxed max-w-3xl mx-auto text-center px-2 sm:px-0 mb-8">
+            We're Donna & Charles—a regular couple who cracked the code to luxury travel. 
+            Join our community and unlock <span className="text-yellow-400">wholesale prices</span> on 
+            five-star resorts worldwide.
+          </p>
+          
+          {/* CTA Buttons */}
+          <div className="fade-in-delay-4 flex flex-col sm:flex-row gap-4 mb-6">
             <button 
               onClick={() => document.getElementById('lead-form')?.scrollIntoView({ behavior: 'smooth' })} 
-              className="mt-6 sm:mt-8 px-6 sm:px-8 py-3 sm:py-4 bg-white text-primary text-base sm:text-lg font-bold rounded-lg hover:bg-white/90 transition-all hover:scale-105 shadow-xl"
+              className="pulse-button px-8 py-4 bg-white text-primary text-lg font-bold rounded-xl hover:bg-white/95 transition-all shadow-2xl flex items-center justify-center gap-2"
             >
-              Show Me How →
+              <Play className="w-5 h-5 fill-primary" />
+              Watch Free Video
+            </button>
+            <button 
+              onClick={() => document.getElementById('how-we-do-it')?.scrollIntoView({ behavior: 'smooth' })} 
+              className="px-8 py-4 bg-transparent text-white text-lg font-semibold rounded-xl border-2 border-white/50 hover:bg-white/10 hover:border-white transition-all"
+            >
+              See How It Works
+            </button>
+          </div>
+
+          {/* Trust Indicators */}
+          <div className="fade-in-delay-5 flex flex-wrap justify-center gap-4 sm:gap-6 text-white/70 text-xs sm:text-sm">
+            <span className="flex items-center gap-1">
+              <Shield className="w-4 h-4" /> No credit card required
+            </span>
+            <span className="flex items-center gap-1">
+              <Play className="w-4 h-4" /> 2-minute video
+            </span>
+            <span className="flex items-center gap-1">
+              <Star className="w-4 h-4" /> 100% free
+            </span>
+          </div>
+
+          {/* Scroll Indicator */}
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bounce-arrow">
+            <button 
+              onClick={() => document.getElementById('lead-form')?.scrollIntoView({ behavior: 'smooth' })}
+              className="text-white/60 hover:text-white transition-colors"
+            >
+              <ChevronDown className="w-8 h-8" />
             </button>
           </div>
         </div>
@@ -183,7 +243,7 @@ const Index = () => {
       </section>
 
       {/* How We Do It Section */}
-      <section className="py-20 px-6 bg-background">
+      <section id="how-we-do-it" className="py-20 px-6 bg-background">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center text-foreground">
             Here's What Changed for Us
