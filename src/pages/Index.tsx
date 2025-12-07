@@ -86,34 +86,22 @@ const Index = () => {
           </h1>
           
           {/* Description */}
-          <p className="fade-in-delay-3 text-base sm:text-lg md:text-xl text-white/90 font-medium leading-relaxed max-w-3xl mx-auto text-center px-2 sm:px-0 mb-6">
+          <p className="fade-in-delay-3 text-base sm:text-lg md:text-xl text-white/90 font-medium leading-relaxed max-w-3xl mx-auto text-center px-2 sm:px-0">
             We're Donna & Charles—a regular couple who cracked the code to luxury travel. 
             We want to share our story with you...
           </p>
           
-          {/* Scroll Prompt - Encourages reading the story first */}
-          <div className="fade-in-delay-4 flex flex-col items-center gap-3 mt-4">
-            <p className="text-white/70 text-sm tracking-widest uppercase">Discover Our Journey</p>
-            <button 
-              onClick={() => document.getElementById('video-section')?.scrollIntoView({ behavior: 'smooth' })} 
-              className="group flex flex-col items-center gap-2 text-white/80 hover:text-white transition-all"
-            >
-              <span className="px-6 py-3 border-2 border-white/40 rounded-full text-base font-medium hover:bg-white/10 hover:border-white/70 transition-all flex items-center gap-2">
-                Read Our Story First
-                <ChevronDown className="w-5 h-5" />
-              </span>
-            </button>
-          </div>
-
-          {/* Animated Scroll Indicator */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bounce-arrow flex flex-col items-center gap-1">
-            <span className="text-white/50 text-xs tracking-wider">SCROLL</span>
-            <button 
-              onClick={() => document.getElementById('video-section')?.scrollIntoView({ behavior: 'smooth' })}
-              className="text-white/60 hover:text-white transition-colors"
-            >
-              <ChevronDown className="w-8 h-8" />
-            </button>
+          {/* Animated Scroll Indicator - Eye-catching arrow */}
+          <div className="fade-in-delay-4 flex flex-col items-center gap-1 mt-10 sm:mt-16">
+            <p className="text-yellow-400 text-lg sm:text-xl font-semibold tracking-wide animate-pulse">
+              Read Our Story
+            </p>
+            <p className="text-white/60 text-xs tracking-widest uppercase mb-2">
+              scroll down
+            </p>
+            <div className="bounce-arrow">
+              <ChevronDown className="w-12 h-12 text-yellow-400 drop-shadow-[0_0_10px_rgba(250,204,21,0.5)]" />
+            </div>
           </div>
         </div>
       </section>
