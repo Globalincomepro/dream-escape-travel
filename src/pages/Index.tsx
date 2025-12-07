@@ -2,14 +2,12 @@ import { Card } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Navigation } from "@/components/Navigation";
 import { LeadCaptureForm } from "@/components/LeadCaptureForm";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import heroImage from "@/assets/background-travel.png";
 import gallery1 from "@/assets/franceski.png";
 import gallery2 from "@/assets/france-village.png";
 import gallery3 from "@/assets/mexico-breakfast.png";
 import gallery4 from "@/assets/new-orleans-church.jpeg";
-import { Plane, DollarSign, Users, Sparkles, MapPin, Calculator, Compass } from "lucide-react";
+import { Plane, DollarSign, Users, Sparkles } from "lucide-react";
 const Index = () => {
   const travelStories = [{
     src: gallery1,
@@ -73,58 +71,6 @@ const Index = () => {
           })} className="mt-8 px-8 py-4 bg-white text-primary text-lg font-bold rounded-lg hover:bg-white/90 transition-all hover:scale-105 shadow-xl">
               Show Me How →
             </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Interactive Tools Section */}
-      <section className="py-16 px-6 bg-gradient-to-b from-primary/5 to-background">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-foreground">
-            Discover Your Travel Potential
-          </h2>
-          <p className="text-lg text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
-            Not sure where to start? Try our interactive tools to find your perfect vacation style and see how much you could save!
-          </p>
-          
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Travel Quiz Card */}
-            <Card className="p-8 hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/50 group">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-primary/20 transition-colors">
-                  <Compass className="w-8 h-8 text-primary" />
-                </div>
-                <h3 className="text-2xl font-bold mb-3 text-foreground">Travel Personality Quiz</h3>
-                <p className="text-muted-foreground mb-6 leading-relaxed">
-                  Discover your ideal travel style! Answer a few fun questions and we'll reveal your perfect vacation destinations and travel personality.
-                </p>
-                <Link to="/quiz">
-                  <Button size="lg" className="w-full md:w-auto px-8 group-hover:scale-105 transition-transform">
-                    <MapPin className="w-5 h-5 mr-2" />
-                    Take the Quiz
-                  </Button>
-                </Link>
-              </div>
-            </Card>
-            
-            {/* Savings Calculator Card */}
-            <Card className="p-8 hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/50 group">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-green-500/20 transition-colors">
-                  <Calculator className="w-8 h-8 text-green-600" />
-                </div>
-                <h3 className="text-2xl font-bold mb-3 text-foreground">Savings Calculator</h3>
-                <p className="text-muted-foreground mb-6 leading-relaxed">
-                  See exactly how much you could save on your dream vacations! Compare retail prices vs. our wholesale member rates.
-                </p>
-                <Link to="/calculator">
-                  <Button size="lg" variant="outline" className="w-full md:w-auto px-8 border-green-500 text-green-600 hover:bg-green-500 hover:text-white group-hover:scale-105 transition-transform">
-                    <DollarSign className="w-5 h-5 mr-2" />
-                    Calculate Savings
-                  </Button>
-                </Link>
-              </div>
-            </Card>
           </div>
         </div>
       </section>
@@ -345,25 +291,6 @@ const Index = () => {
           
           <div id="lead-form" className="scroll-mt-20">
             <LeadCaptureForm />
-          </div>
-          
-          {/* Alternative Actions */}
-          <div className="mt-12 pt-8 border-t border-border">
-            <p className="text-muted-foreground mb-6">Or explore these first:</p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/quiz">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                  <Compass className="w-5 h-5 mr-2" />
-                  Take the Travel Quiz
-                </Button>
-              </Link>
-              <Link to="/calculator">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                  <Calculator className="w-5 h-5 mr-2" />
-                  See Your Savings
-                </Button>
-              </Link>
-            </div>
           </div>
           
           <p className="text-sm text-muted-foreground mt-6 flex items-center justify-center gap-2">

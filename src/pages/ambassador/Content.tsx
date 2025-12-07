@@ -4,12 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Upload, Loader2, Trash2 } from "lucide-react";
+import { ArrowLeft, Upload, Loader2, Trash2, Copy, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ImageUpload } from "@/components/ImageUpload";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { SchedulePostModal } from "@/components/ambassador/SchedulePostModal";
 
 interface ContentItem {
   id: string;
@@ -31,8 +30,7 @@ export default function AmbassadorContent() {
   const [myContent, setMyContent] = useState<ContentItem[]>([]);
   const [uploading, setUploading] = useState(false);
   const [newCaption, setNewCaption] = useState("");
-  const [selectedContent, setSelectedContent] = useState<ContentItem | null>(null);
-  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [funnelSlug, setFunnelSlug] = useState<string>("");
 
   useEffect(() => {
     loadData();
@@ -47,6 +45,17 @@ export default function AmbassadorContent() {
       }
 
       setUserId(user.id);
+
+      // Load funnel for generating links
+      const { data: funnel } = await supabase
+        .from("ambassador_funnels")
+        .select("funnel_slug")
+        .eq("user_id", user.id)
+        .single();
+      
+      if (funnel) {
+        setFunnelSlug(funnel.funnel_slug);
+      }
 
       // Load content library
       const { data: library, error: libraryError } = await supabase
@@ -107,9 +116,53 @@ export default function AmbassadorContent() {
     }
   };
 
-  const handleScheduleClick = (content: ContentItem) => {
-    setSelectedContent(content);
-    setShowScheduleModal(true);
+  const handleCopyCaption = (content: ContentItem) => {
+    const caption = content.caption_text || content.caption || "";
+    const funnelLink = funnelSlug ? `${window.location.origin}/f/${funnelSlug}` : "";
+    const fullCaption = caption + (caption && funnelLink ? "\n\n" : "") + (funnelLink ? `🌍 Learn more: ${funnelLink}` : "");
+    
+    navigator.clipboard.writeText(fullCaption);
+    toast({
+      title: "Caption Copied!",
+      description: "Caption with your funnel link has been copied to clipboard"
+    });
+  };
+
+  const handleDownloadImage = async (content: ContentItem) => {
+    try {
+      const imageUrl = content.file_url || content.thumbnail_url;
+      if (!imageUrl) {
+        toast({
+          title: "No image available",
+          description: "This content doesn't have an image to download",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Fetch the image and create a download link
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `travel-content-${content.id}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast({
+        title: "Download Started!",
+        description: "Your image is being downloaded"
+      });
+    } catch (error) {
+      toast({
+        title: "Download Failed",
+        description: "There was an error downloading the image",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleDeleteContent = async (contentId: string) => {
@@ -161,8 +214,8 @@ export default function AmbassadorContent() {
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">Content Hub</h1>
-            <p className="text-muted-foreground">Upload your travel photos or choose from our library</p>
+            <h1 className="text-3xl font-bold">Content Library</h1>
+            <p className="text-muted-foreground">Download images and copy captions to share on your social media</p>
           </div>
         </div>
 
@@ -196,9 +249,16 @@ export default function AmbassadorContent() {
                         {item.caption_text}
                       </p>
                     )}
-                    <Button onClick={() => handleScheduleClick(item)} className="w-full">
-                      Schedule Post
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button onClick={() => handleCopyCaption(item)} variant="outline" className="flex-1">
+                        <Copy className="w-4 h-4 mr-2" />
+                        Copy Caption
+                      </Button>
+                      <Button onClick={() => handleDownloadImage(item)} className="flex-1">
+                        <Download className="w-4 h-4 mr-2" />
+                        Download
+                      </Button>
+                    </div>
                   </div>
                 </Card>
               ))}
@@ -227,7 +287,7 @@ export default function AmbassadorContent() {
                     rows={3}
                   />
                   <p className="text-xs text-muted-foreground mt-1">
-                    Your funnel link will be automatically added when you schedule the post
+                    Your funnel link will be automatically added when you copy the caption
                   </p>
                 </div>
               </div>
@@ -259,22 +319,32 @@ export default function AmbassadorContent() {
                           {item.caption}
                         </p>
                       )}
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 mb-2">
                         <Button 
-                          onClick={() => handleScheduleClick(item)} 
+                          onClick={() => handleCopyCaption(item)} 
+                          variant="outline"
                           className="flex-1"
                         >
-                          Schedule Post
+                          <Copy className="w-4 h-4 mr-2" />
+                          Copy
                         </Button>
                         <Button 
-                          variant="destructive" 
-                          size="icon"
-                          onClick={() => handleDeleteContent(item.id)}
-                          title="Delete content"
+                          onClick={() => handleDownloadImage(item)} 
+                          className="flex-1"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Download className="w-4 h-4 mr-2" />
+                          Download
                         </Button>
                       </div>
+                      <Button 
+                        variant="destructive" 
+                        size="sm"
+                        className="w-full"
+                        onClick={() => handleDeleteContent(item.id)}
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete
+                      </Button>
                     </div>
                   </Card>
                 ))
@@ -284,18 +354,6 @@ export default function AmbassadorContent() {
         </Tabs>
       </div>
 
-      {selectedContent && (
-        <SchedulePostModal
-          open={showScheduleModal}
-          onClose={() => {
-            setShowScheduleModal(false);
-            setSelectedContent(null);
-          }}
-          content={selectedContent}
-          userId={userId}
-          onScheduled={loadData}
-        />
-      )}
     </div>
   );
 }

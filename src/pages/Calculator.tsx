@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { Navigation } from '@/components/Navigation'
 import { Button } from '@/components/ui/button'
@@ -6,22 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
-import { supabase } from '@/integrations/supabase/client'
+import { createLead } from '@/lib/supabase'
 import { useToast } from '@/hooks/use-toast'
+import { formatCurrency } from '@/lib/utils'
 import { 
   Calculator, DollarSign, TrendingDown, Plane, 
   Hotel, Ship, ArrowRight, Loader2, Sparkles,
   PiggyBank, Calendar
 } from 'lucide-react'
-
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount)
-}
 
 export default function CalculatorPage() {
   const [step, setStep] = useState(1)
@@ -34,9 +27,9 @@ export default function CalculatorPage() {
     cruiseCost: 2000,
   })
   const [contactData, setContactData] = useState({
-    fullName: '',
+    firstName: '',
+    lastName: '',
     email: '',
-    phone: '',
   })
   const [showResults, setShowResults] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -64,26 +57,22 @@ export default function CalculatorPage() {
     setIsSubmitting(true)
 
     try {
-      const { error } = await supabase
-        .from('leads')
-        .insert({
-          email: contactData.email,
-          full_name: contactData.fullName,
-          phone: contactData.phone || null,
-          source: 'calculator',
-          intent: `savings_${Math.round(annualSavings)}`,
-          status: 'new'
-        })
-
-      if (error) throw error
+      await createLead({
+        email: contactData.email,
+        first_name: contactData.firstName,
+        last_name: contactData.lastName,
+        lead_score: 45,
+        lead_status: 'warm',
+        source: 'calculator',
+      })
 
       toast({
         title: "🎉 Your savings report is ready!",
         description: "Check your email for your detailed savings breakdown.",
       })
 
-      navigate('/webinar')
-    } catch (error: any) {
+      navigate('/thank-you')
+    } catch (error) {
       console.error('Error:', error)
       toast({
         title: "Something went wrong",
@@ -96,40 +85,44 @@ export default function CalculatorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50/50 via-background to-primary/5">
+    <div className="min-h-screen bg-gradient-to-br from-gold/5 via-background to-primary/5">
       <Navigation />
 
       <div className="pt-32 pb-20 px-6">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-12 animate-in fade-in duration-500">
-            <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Calculator className="w-10 h-10 text-amber-600" />
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-12"
+          >
+            <div className="w-20 h-20 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Calculator className="w-10 h-10 text-gold-dark" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            <h1 className="text-4xl md:text-5xl font-heading font-bold mb-4">
               Travel Savings Calculator
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               See exactly how much you could save with wholesale travel pricing
             </p>
-          </div>
+          </motion.div>
 
           {/* Progress Steps */}
           <div className="flex justify-center mb-12">
             <div className="flex items-center gap-4">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-colors ${
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
                 step >= 1 ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'
               }`}>
                 1
               </div>
-              <div className={`w-24 h-1 transition-colors ${step >= 2 ? 'bg-primary' : 'bg-muted'}`} />
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-colors ${
+              <div className={`w-24 h-1 ${step >= 2 ? 'bg-primary' : 'bg-muted'}`} />
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
                 step >= 2 ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'
               }`}>
                 2
               </div>
-              <div className={`w-24 h-1 transition-colors ${step >= 3 ? 'bg-primary' : 'bg-muted'}`} />
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-colors ${
+              <div className={`w-24 h-1 ${step >= 3 ? 'bg-primary' : 'bg-muted'}`} />
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
                 step >= 3 ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'
               }`}>
                 3
@@ -139,7 +132,10 @@ export default function CalculatorPage() {
 
           {/* Step 1: Input Form */}
           {step === 1 && (
-            <div className="animate-in fade-in slide-in-from-right duration-300">
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+            >
               <Card className="max-w-2xl mx-auto">
                 <CardHeader>
                   <CardTitle className="text-center">
@@ -160,7 +156,7 @@ export default function CalculatorPage() {
                           max="10"
                           value={formData.tripsPerYear}
                           onChange={(e) => setFormData({ ...formData, tripsPerYear: parseInt(e.target.value) })}
-                          className="flex-1 accent-primary"
+                          className="flex-1"
                         />
                         <span className="text-2xl font-bold text-primary w-12 text-center">
                           {formData.tripsPerYear}
@@ -196,7 +192,7 @@ export default function CalculatorPage() {
                           max="14"
                           value={formData.nightsPerTrip}
                           onChange={(e) => setFormData({ ...formData, nightsPerTrip: parseInt(e.target.value) })}
-                          className="flex-1 accent-primary"
+                          className="flex-1"
                         />
                         <span className="text-2xl font-bold text-primary w-12 text-center">
                           {formData.nightsPerTrip}
@@ -226,7 +222,7 @@ export default function CalculatorPage() {
                         id="cruise"
                         checked={formData.includesCruise}
                         onChange={(e) => setFormData({ ...formData, includesCruise: e.target.checked })}
-                        className="w-5 h-5 accent-primary"
+                        className="w-5 h-5"
                       />
                       <Label htmlFor="cruise" className="flex items-center gap-2 cursor-pointer">
                         <Ship className="w-4 h-4 text-primary" />
@@ -235,7 +231,7 @@ export default function CalculatorPage() {
                     </div>
 
                     {formData.includesCruise && (
-                      <div className="animate-in fade-in duration-200">
+                      <div>
                         <Label className="flex items-center gap-2 mb-2">
                           <Ship className="w-4 h-4 text-primary" />
                           Annual cruise budget
@@ -255,7 +251,8 @@ export default function CalculatorPage() {
 
                   <Button
                     size="lg"
-                    className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
+                    variant="gold"
+                    className="w-full"
                     onClick={handleCalculate}
                   >
                     Calculate My Savings
@@ -263,18 +260,22 @@ export default function CalculatorPage() {
                   </Button>
                 </CardContent>
               </Card>
-            </div>
+            </motion.div>
           )}
 
           {/* Step 2: Results */}
           {step === 2 && showResults && (
-            <div className="space-y-8 animate-in fade-in zoom-in duration-500">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="space-y-8"
+            >
               {/* Savings Summary */}
               <Card className="overflow-hidden">
-                <div className="bg-gradient-to-r from-primary to-blue-600 p-8 text-white text-center">
+                <div className="bg-gradient-to-r from-primary to-ocean p-8 text-white text-center">
                   <Sparkles className="w-12 h-12 mx-auto mb-4" />
                   <h2 className="text-2xl font-bold mb-2">Your Potential Annual Savings</h2>
-                  <div className="text-6xl font-bold mb-2">
+                  <div className="text-6xl font-heading font-bold mb-2">
                     {formatCurrency(annualSavings)}
                   </div>
                   <p className="text-white/80">per year with wholesale travel pricing</p>
@@ -307,13 +308,13 @@ export default function CalculatorPage() {
                     {/* Long-term Savings */}
                     <div>
                       <h3 className="font-bold mb-4 flex items-center gap-2">
-                        <PiggyBank className="w-5 h-5 text-amber-600" />
+                        <PiggyBank className="w-5 h-5 text-gold-dark" />
                         Long-Term Impact
                       </h3>
                       <div className="space-y-4">
-                        <div className="p-4 bg-amber-50 rounded-xl text-center">
+                        <div className="p-4 bg-gold/10 rounded-xl text-center">
                           <p className="text-sm text-muted-foreground mb-1">5-Year Savings</p>
-                          <p className="text-3xl font-bold text-amber-600">{formatCurrency(fiveYearSavings)}</p>
+                          <p className="text-3xl font-bold text-gold-dark">{formatCurrency(fiveYearSavings)}</p>
                         </div>
                         <p className="text-sm text-muted-foreground text-center">
                           That's enough for {Math.floor(fiveYearSavings / (formData.avgHotelNight * formData.nightsPerTrip))} extra 
@@ -335,7 +336,7 @@ export default function CalculatorPage() {
               </Card>
 
               {/* CTA Card */}
-              <Card className="p-8 text-center bg-gradient-to-br from-primary/5 to-amber-50/50">
+              <Card className="p-8 text-center bg-gradient-to-br from-primary/5 to-gold/5">
                 <h3 className="text-2xl font-bold mb-4">
                   Want to Start Saving {formatCurrency(annualSavings)}/Year?
                 </h3>
@@ -345,19 +346,22 @@ export default function CalculatorPage() {
                 </p>
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-amber-500 to-amber-600"
+                  variant="gold"
                   onClick={() => setStep(3)}
                 >
                   Get My Free Savings Report
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Card>
-            </div>
+            </motion.div>
           )}
 
           {/* Step 3: Contact Form */}
           {step === 3 && (
-            <div className="animate-in fade-in slide-in-from-bottom duration-300">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
               <Card className="max-w-md mx-auto">
                 <CardHeader className="text-center">
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -370,15 +374,25 @@ export default function CalculatorPage() {
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="fullName">Full Name</Label>
-                      <Input
-                        id="fullName"
-                        value={contactData.fullName}
-                        onChange={(e) => setContactData({ ...contactData, fullName: e.target.value })}
-                        placeholder="Your name"
-                        required
-                      />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="firstName">First Name</Label>
+                        <Input
+                          id="firstName"
+                          value={contactData.firstName}
+                          onChange={(e) => setContactData({ ...contactData, firstName: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="lastName">Last Name</Label>
+                        <Input
+                          id="lastName"
+                          value={contactData.lastName}
+                          onChange={(e) => setContactData({ ...contactData, lastName: e.target.value })}
+                          required
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">Email Address</Label>
@@ -387,18 +401,7 @@ export default function CalculatorPage() {
                         type="email"
                         value={contactData.email}
                         onChange={(e) => setContactData({ ...contactData, email: e.target.value })}
-                        placeholder="you@example.com"
                         required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Phone (Optional)</Label>
-                      <Input
-                        id="phone"
-                        type="tel"
-                        value={contactData.phone}
-                        onChange={(e) => setContactData({ ...contactData, phone: e.target.value })}
-                        placeholder="(555) 123-4567"
                       />
                     </div>
 
@@ -410,7 +413,8 @@ export default function CalculatorPage() {
                     <Button
                       type="submit"
                       size="lg"
-                      className="w-full bg-gradient-to-r from-amber-500 to-amber-600"
+                      variant="gold"
+                      className="w-full"
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (
@@ -428,10 +432,11 @@ export default function CalculatorPage() {
                   </form>
                 </CardContent>
               </Card>
-            </div>
+            </motion.div>
           )}
         </div>
       </div>
     </div>
   )
 }
+

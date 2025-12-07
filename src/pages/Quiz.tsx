@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { Navigation } from '@/components/Navigation'
 import { Button } from '@/components/ui/button'
@@ -6,7 +7,7 @@ import { Card } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { supabase } from '@/integrations/supabase/client'
+import { createLead } from '@/lib/supabase'
 import { useToast } from '@/hooks/use-toast'
 import { 
   Palmtree, Mountain, Building2, Ship, 
@@ -116,7 +117,7 @@ export default function Quiz() {
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [showResults, setShowResults] = useState(false)
   const [showForm, setShowForm] = useState(false)
-  const [formData, setFormData] = useState({ fullName: '', email: '', phone: '' })
+  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
   const navigate = useNavigate()
@@ -148,28 +149,23 @@ export default function Quiz() {
     setIsSubmitting(true)
 
     try {
-      // Save lead to database
-      const { error } = await supabase
-        .from('leads')
-        .insert({
-          email: formData.email,
-          full_name: formData.fullName,
-          phone: formData.phone || null,
-          source: 'quiz',
-          intent: personalityKey,
-          status: 'new'
-        })
-
-      if (error) throw error
+      await createLead({
+        email: formData.email,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        lead_score: 50, // Higher score for quiz completers
+        lead_status: 'warm',
+        source: 'quiz',
+        quiz_result: personalityKey,
+      })
 
       toast({
         title: "🎉 Your results are on the way!",
         description: "Check your email for your personalized travel guide.",
       })
 
-      // Redirect to webinar or thank you page
-      navigate('/webinar')
-    } catch (error: any) {
+      navigate('/thank-you')
+    } catch (error) {
       console.error('Error submitting quiz:', error)
       toast({
         title: "Something went wrong",
@@ -182,20 +178,24 @@ export default function Quiz() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-amber-50/50">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-gold/5">
       <Navigation />
 
       <div className="pt-32 pb-20 px-6">
         <div className="max-w-2xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-8 animate-in fade-in duration-500">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-8"
+          >
+            <h1 className="text-3xl md:text-4xl font-heading font-bold mb-2">
               Discover Your Travel Personality
             </h1>
             <p className="text-muted-foreground">
               Answer 4 quick questions to unlock your personalized travel profile
             </p>
-          </div>
+          </motion.div>
 
           {/* Progress Bar */}
           {!showResults && (
@@ -209,148 +209,167 @@ export default function Quiz() {
           )}
 
           {/* Quiz Content */}
-          {!showResults ? (
-            <div className="animate-in fade-in slide-in-from-right duration-300">
-              <Card className="p-8">
-                <h2 className="text-2xl font-bold text-center mb-8">
-                  {questions[currentQuestion].question}
-                </h2>
+          <AnimatePresence mode="wait">
+            {!showResults ? (
+              <motion.div
+                key={currentQuestion}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Card className="p-8">
+                  <h2 className="text-2xl font-bold text-center mb-8">
+                    {questions[currentQuestion].question}
+                  </h2>
 
-                <div className="grid grid-cols-2 gap-4">
-                  {questions[currentQuestion].answers.map((answer) => (
-                    <button
-                      key={answer.id}
-                      onClick={() => handleAnswer(answer.value)}
-                      className={`p-6 rounded-xl border-2 transition-all duration-200 text-left hover:scale-[1.02] ${
-                        answers[questions[currentQuestion].id] === answer.value
-                          ? 'border-primary bg-primary/10'
-                          : 'border-border hover:border-primary/50 hover:bg-muted/50'
-                      }`}
-                    >
-                      <div className="text-primary mb-3">{answer.icon}</div>
-                      <span className="font-medium">{answer.text}</span>
-                    </button>
-                  ))}
-                </div>
-
-                {currentQuestion > 0 && (
-                  <Button
-                    variant="ghost"
-                    onClick={handleBack}
-                    className="mt-6"
-                  >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back
-                  </Button>
-                )}
-              </Card>
-            </div>
-          ) : !showForm ? (
-            <div className="animate-in fade-in zoom-in duration-500">
-              <Card className="p-8 text-center">
-                <div className="text-6xl mb-4">{result.emoji}</div>
-                <h2 className="text-3xl font-bold mb-2">
-                  You're a {result.title}!
-                </h2>
-                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                  {result.description}
-                </p>
-
-                <div className="bg-muted/50 rounded-xl p-6 mb-6">
-                  <h3 className="font-bold mb-3">Perfect Destinations for You:</h3>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    {result.destinations.map((dest) => (
-                      <span
-                        key={dest}
-                        className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm"
+                  <div className="grid grid-cols-2 gap-4">
+                    {questions[currentQuestion].answers.map((answer) => (
+                      <motion.button
+                        key={answer.id}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => handleAnswer(answer.value)}
+                        className={`p-6 rounded-xl border-2 transition-all duration-200 text-left ${
+                          answers[questions[currentQuestion].id] === answer.value
+                            ? 'border-primary bg-primary/10'
+                            : 'border-border hover:border-primary/50 hover:bg-muted/50'
+                        }`}
                       >
-                        {dest}
-                      </span>
+                        <div className="text-primary mb-3">{answer.icon}</div>
+                        <span className="font-medium">{answer.text}</span>
+                      </motion.button>
                     ))}
                   </div>
-                </div>
 
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8">
-                  <p className="text-amber-800 font-semibold">{result.savings}</p>
-                </div>
-
-                <Button
-                  size="lg"
-                  onClick={() => setShowForm(true)}
-                  className="w-full bg-gradient-to-r from-primary to-blue-600"
-                >
-                  Get My Personalized Travel Guide
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </Card>
-            </div>
-          ) : (
-            <div className="animate-in fade-in slide-in-from-bottom duration-300">
-              <Card className="p-8">
-                <div className="text-center mb-6">
-                  <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
-                  <h2 className="text-2xl font-bold mb-2">Almost There!</h2>
-                  <p className="text-muted-foreground">
-                    Enter your details to receive your personalized {result.title} travel guide
+                  {currentQuestion > 0 && (
+                    <Button
+                      variant="ghost"
+                      onClick={handleBack}
+                      className="mt-6"
+                    >
+                      <ArrowLeft className="w-4 h-4 mr-2" />
+                      Back
+                    </Button>
+                  )}
+                </Card>
+              </motion.div>
+            ) : !showForm ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Card className="p-8 text-center">
+                  <div className="text-6xl mb-4">{result.emoji}</div>
+                  <h2 className="text-3xl font-heading font-bold mb-2">
+                    You're a {result.title}!
+                  </h2>
+                  <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                    {result.description}
                   </p>
-                </div>
 
-                <form onSubmit={handleFormSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="fullName">Full Name</Label>
-                    <Input
-                      id="fullName"
-                      value={formData.fullName}
-                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                      placeholder="Your name"
-                      required
-                    />
+                  <div className="bg-muted/50 rounded-xl p-6 mb-6">
+                    <h3 className="font-bold mb-3">Perfect Destinations for You:</h3>
+                    <div className="flex flex-wrap justify-center gap-2">
+                      {result.destinations.map((dest) => (
+                        <span
+                          key={dest}
+                          className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm"
+                        >
+                          {dest}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email Address</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      placeholder="you@example.com"
-                      required
-                    />
+
+                  <div className="bg-gold/10 border border-gold/20 rounded-xl p-4 mb-8">
+                    <p className="text-gold-dark font-semibold">{result.savings}</p>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone (Optional)</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      placeholder="(555) 123-4567"
-                    />
-                  </div>
+
                   <Button
-                    type="submit"
                     size="lg"
-                    className="w-full bg-gradient-to-r from-primary to-blue-600"
-                    disabled={isSubmitting}
+                    variant="gold"
+                    onClick={() => setShowForm(true)}
+                    className="w-full"
                   >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        Send My Results
-                        <ArrowRight className="w-5 h-5 ml-2" />
-                      </>
-                    )}
+                    Get My Personalized Travel Guide
+                    <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
-                </form>
-              </Card>
-            </div>
-          )}
+                </Card>
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <Card className="p-8">
+                  <div className="text-center mb-6">
+                    <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
+                    <h2 className="text-2xl font-bold mb-2">Almost There!</h2>
+                    <p className="text-muted-foreground">
+                      Enter your details to receive your personalized {result.title} travel guide
+                    </p>
+                  </div>
+
+                  <form onSubmit={handleFormSubmit} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="firstName">First Name</Label>
+                        <Input
+                          id="firstName"
+                          value={formData.firstName}
+                          onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="lastName">Last Name</Label>
+                        <Input
+                          id="lastName"
+                          value={formData.lastName}
+                          onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email Address</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <Button
+                      type="submit"
+                      size="lg"
+                      variant="gold"
+                      className="w-full"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          Send My Results
+                          <ArrowRight className="w-5 h-5 ml-2" />
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                </Card>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </div>
   )
 }
+

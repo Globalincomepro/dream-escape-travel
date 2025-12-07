@@ -42,7 +42,7 @@ const handler = async (req: Request): Promise<Response> => {
       : `🚨 New Lead from Webinar: ${lead.full_name}`;
 
     const emailResponse = await resend.emails.send({
-      from: "Travel VIP <onboarding@resend.dev>",
+      from: "MWR Travel Leads <DonnaCharles@iluvmytravelclub.com>",
       to: [adminEmail],
       subject: subject,
       html: `

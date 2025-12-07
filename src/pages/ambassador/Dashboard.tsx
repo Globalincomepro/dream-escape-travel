@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Eye, Users, TrendingUp, Copy, ExternalLink, LogOut, Settings, Share2, Calendar, BarChart3 } from 'lucide-react';
+import { Eye, Users, TrendingUp, Copy, ExternalLink, LogOut, Settings, Share2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 
@@ -26,9 +26,7 @@ const AmbassadorDashboard = () => {
   const [stats, setStats] = useState({
     pageViews: 0,
     leads: 0,
-    conversions: 0,
-    socialPosts: 0,
-    socialClicks: 0
+    conversions: 0
   });
   
   useEffect(() => {
@@ -56,7 +54,7 @@ const AmbassadorDashboard = () => {
     setFunnel(funnelData);
     
     // Load stats
-    const [views, leads, conversions, socialPosts, socialAnalytics] = await Promise.all([
+    const [views, leads, conversions] = await Promise.all([
       supabase
         .from('funnel_analytics')
         .select('*', { count: 'exact', head: true })
@@ -72,28 +70,13 @@ const AmbassadorDashboard = () => {
         .from('leads')
         .select('*', { count: 'exact', head: true })
         .eq('ambassador_id', user.id)
-        .in('status', ['guest', 'vip', 'ambassador']),
-      
-      supabase
-        .from('scheduled_posts')
-        .select('*', { count: 'exact', head: true })
-        .eq('ambassador_id', user.id)
-        .eq('status', 'posted'),
-      
-      supabase
-        .from('social_post_analytics')
-        .select('clicks')
-        .eq('ambassador_id', user.id)
+        .in('status', ['guest', 'vip', 'ambassador'])
     ]);
-    
-    const totalSocialClicks = socialAnalytics.data?.reduce((sum, a) => sum + a.clicks, 0) || 0;
     
     setStats({
       pageViews: views.count || 0,
       leads: leads.count || 0,
-      conversions: conversions.count || 0,
-      socialPosts: socialPosts.count || 0,
-      socialClicks: totalSocialClicks
+      conversions: conversions.count || 0
     });
   };
   
@@ -187,51 +170,16 @@ const AmbassadorDashboard = () => {
           </Card>
         )}
         
-        {/* Social Media Performance */}
+        {/* Content Library */}
         <Card className="p-6 mb-8">
-          <h3 className="text-lg font-semibold mb-4">Social Media Performance</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-primary/10 rounded-lg">
-                <Calendar className="w-6 h-6 text-primary" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Posts Scheduled</p>
-                <p className="text-2xl font-bold">{stats.socialPosts}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-blue-500/10 rounded-lg">
-                <Share2 className="w-6 h-6 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Total Clicks</p>
-                <p className="text-2xl font-bold">{stats.socialClicks}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-green-500/10 rounded-lg">
-                <BarChart3 className="w-6 h-6 text-green-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Click Rate</p>
-                <p className="text-2xl font-bold">
-                  {stats.socialPosts > 0 ? Math.round(stats.socialClicks / stats.socialPosts) : 0}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <Button onClick={() => navigate('/ambassador/content')}>
-              Upload Content
-            </Button>
-            <Button variant="outline" onClick={() => navigate('/ambassador/scheduled-posts')}>
-              View Queue
-            </Button>
-            <Button variant="outline" onClick={() => navigate('/ambassador/analytics/social')}>
-              View Analytics
-            </Button>
-          </div>
+          <h3 className="text-lg font-semibold mb-4">Content Library</h3>
+          <p className="text-muted-foreground mb-4">
+            Browse ready-to-use travel images and captions. Download images and copy captions to share on your social media!
+          </p>
+          <Button onClick={() => navigate('/ambassador/content')}>
+            <Share2 className="w-4 h-4 mr-2" />
+            Browse Content
+          </Button>
         </Card>
 
         {/* Quick Actions */}

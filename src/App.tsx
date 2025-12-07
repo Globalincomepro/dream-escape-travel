@@ -10,8 +10,6 @@ import Auth from "./pages/Auth";
 import Pending from "./pages/Pending";
 import MyLeads from "./pages/MyLeads";
 import Funnel from "./pages/Funnel";
-import Quiz from "./pages/Quiz";
-import Calculator from "./pages/Calculator";
 import AmbassadorDashboard from "./pages/ambassador/Dashboard";
 import AmbassadorSettings from "./pages/ambassador/Settings";
 import AmbassadorContent from "./pages/ambassador/Content";
@@ -19,8 +17,6 @@ import ScheduledPosts from "./pages/ambassador/ScheduledPosts";
 import SocialAnalytics from "./pages/ambassador/SocialAnalytics";
 import AdminDashboard from "./pages/admin/Dashboard";
 import { ProtectedRoute } from "./components/ProtectedRoute";
-import { AIChat } from "./components/AIChat";
-import { SocialProofNotifications } from "./components/SocialProofNotifications";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,8 +30,6 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/webinar" element={<Webinar />} />
-          <Route path="/quiz" element={<Quiz />} />
-          <Route path="/calculator" element={<Calculator />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/pending" element={<Pending />} />
           <Route path="/f/:funnelSlug" element={<Funnel />} />
@@ -74,7 +68,7 @@ const App = () => (
           <Route 
             path="/ambassador/scheduled-posts" 
             element={
-              <ProtectedRoute requiredRole="ambassador">
+              <ProtectedRoute requiredRole="admin">
                 <ScheduledPosts />
               </ProtectedRoute>
             } 
@@ -82,7 +76,7 @@ const App = () => (
           <Route 
             path="/ambassador/analytics/social" 
             element={
-              <ProtectedRoute requiredRole="ambassador">
+              <ProtectedRoute requiredRole="admin">
                 <SocialAnalytics />
               </ProtectedRoute>
             } 
@@ -98,9 +92,6 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-        {/* AI Features - Available on all pages */}
-        <AIChat />
-        <SocialProofNotifications />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

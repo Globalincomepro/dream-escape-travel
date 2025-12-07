@@ -2,23 +2,46 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { LogOut, LayoutDashboard, LogIn, Compass, Calculator } from 'lucide-react';
+import { LogOut, LayoutDashboard, LogIn, Shield, Users } from 'lucide-react';
 
 export const Navigation = () => {
   const [user, setUser] = useState<any>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAmbassador, setIsAmbassador] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        checkRoles(session.user.id);
+      }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        checkRoles(session.user.id);
+      } else {
+        setIsAdmin(false);
+        setIsAmbassador(false);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const checkRoles = async (userId: string) => {
+    const { data: roles } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId);
+    
+    if (roles) {
+      setIsAdmin(roles.some(r => r.role === 'admin'));
+      setIsAmbassador(roles.some(r => r.role === 'ambassador'));
+    }
+  };
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -32,40 +55,42 @@ export const Navigation = () => {
           Earth Resonance Wellness
         </h2>
         
-        <div className="flex items-center gap-2 md:gap-3">
-          {/* Quiz & Calculator - Always visible */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/quiz')}
-            className="hidden sm:flex items-center gap-2"
-          >
-            <Compass className="w-4 h-4" />
-            <span className="hidden md:inline">Quiz</span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/calculator')}
-            className="hidden sm:flex items-center gap-2"
-          >
-            <Calculator className="w-4 h-4" />
-            <span className="hidden md:inline">Savings</span>
-          </Button>
-          
-          <div className="h-6 w-px bg-border hidden sm:block" />
-          
+        <div className="flex items-center gap-3">
           {user ? (
             <>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate('/my-leads')}
-                className="flex items-center gap-2"
-              >
-                <LayoutDashboard className="w-4 h-4" />
-                <span className="hidden md:inline">My Leads</span>
-              </Button>
+              {isAdmin && (
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => navigate('/admin/dashboard')}
+                  className="flex items-center gap-2 bg-primary"
+                >
+                  <Shield className="w-4 h-4" />
+                  Admin
+                </Button>
+              )}
+              {isAmbassador && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate('/ambassador/dashboard')}
+                  className="flex items-center gap-2"
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  Dashboard
+                </Button>
+              )}
+              {isAmbassador && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate('/my-leads')}
+                  className="flex items-center gap-2"
+                >
+                  <Users className="w-4 h-4" />
+                  Leads
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 size="sm"
@@ -73,7 +98,7 @@ export const Navigation = () => {
                 className="flex items-center gap-2"
               >
                 <LogOut className="w-4 h-4" />
-                <span className="hidden md:inline">Sign Out</span>
+                Sign Out
               </Button>
             </>
           ) : (
@@ -84,7 +109,7 @@ export const Navigation = () => {
               className="flex items-center gap-2"
             >
               <LogIn className="w-4 h-4" />
-              <span className="hidden md:inline">Login</span>
+              Login
             </Button>
           )}
         </div>

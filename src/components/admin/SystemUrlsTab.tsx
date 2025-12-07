@@ -90,26 +90,14 @@ export const SystemUrlsTab = () => {
         {
           path: "/ambassador/settings",
           title: "Funnel Settings",
-          description: "Customize funnel profile, gallery, social media, and links",
+          description: "Customize funnel profile, gallery, and links",
           icon: <Settings className="h-4 w-4" />,
         },
         {
           path: "/ambassador/content",
           title: "Content Library",
-          description: "Upload and manage images/captions for social media posts",
+          description: "Browse and download images/captions for social media",
           icon: <FileText className="h-4 w-4" />,
-        },
-        {
-          path: "/ambassador/scheduled-posts",
-          title: "Scheduled Posts",
-          description: "View and manage scheduled social media posts via Zapier",
-          icon: <Megaphone className="h-4 w-4" />,
-        },
-        {
-          path: "/ambassador/analytics/social",
-          title: "Social Analytics",
-          description: "Track social media performance and engagement metrics",
-          icon: <BarChart3 className="h-4 w-4" />,
         },
         {
           path: "/my-leads",
@@ -129,6 +117,18 @@ export const SystemUrlsTab = () => {
           title: "Admin Dashboard",
           description: "Manage ambassador applications and monitor platform performance",
           icon: <Shield className="h-4 w-4" />,
+        },
+        {
+          path: "/ambassador/scheduled-posts",
+          title: "Scheduled Posts (Admin)",
+          description: "View and manage scheduled social media posts via Zapier",
+          icon: <Megaphone className="h-4 w-4" />,
+        },
+        {
+          path: "/ambassador/analytics/social",
+          title: "Social Analytics (Admin)",
+          description: "Track social media performance and engagement metrics",
+          icon: <BarChart3 className="h-4 w-4" />,
         },
       ],
     },

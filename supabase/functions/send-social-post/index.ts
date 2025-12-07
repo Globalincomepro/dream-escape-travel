@@ -125,16 +125,13 @@ serve(async (req) => {
 
     // Get funnel slug
     const funnelSlug = funnel?.funnel_slug || 'default';
-    
-    // Your live domain
-    const appDomain = Deno.env.get('APP_DOMAIN') || 'iluvmytravelclub.com';
-    const funnelLink = appDomain 
-      ? `https://${appDomain}/f/${funnelSlug}?ref=social&post_id=${post.id}`
-      : '';
+    // Use the correct Lovable preview domain
+    const appDomain = '06c391fc-722a-44fc-9eb7-d8ce2835f36b.lovableproject.com';
+    const funnelLink = `https://${appDomain}/f/${funnelSlug}?ref=social&post_id=${post.id}`;
 
-    // Build caption - only add funnel link if domain is configured
+    // Build caption with funnel link
     let caption = post.custom_caption || '';
-    if (funnelLink && !caption.includes('http')) {
+    if (!caption.includes('http')) {
       caption += `\n\n🌍 Book your dream vacation: ${funnelLink}`;
     }
 

@@ -138,7 +138,7 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     const emailResponse = await resend.emails.send({
-      from: "Donna & Charles <onboarding@resend.dev>",
+      from: "Donna & Charles <DonnaCharles@iluvmytravelclub.com>",
       to: [email],
       subject: subject,
       html: html,
