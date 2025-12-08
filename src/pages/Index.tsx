@@ -49,8 +49,8 @@ const Index = () => {
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background with enhanced overlay */}
         <div className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105" style={{
-          backgroundImage: `url(${heroImage})`
-        }}>
+        backgroundImage: `url(${heroImage})`
+      }}>
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
           {/* Subtle animated gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-secondary/20 opacity-60" />
@@ -83,8 +83,8 @@ const Index = () => {
             Travel More. Spend Less.
             <br />
             <span className="text-white">Live Better.</span>
-          </h1>
-          
+            </h1>
+            
           {/* Description */}
           <p className="fade-in-delay-3 text-base sm:text-lg md:text-xl text-white/90 font-medium leading-relaxed max-w-3xl mx-auto text-center px-2 sm:px-0">
             We're Donna & Charles—a regular couple who cracked the code to luxury travel. 
@@ -114,10 +114,8 @@ const Index = () => {
           </h2>
           
           <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-            In this short video, we'll reveal exactly how we went from one vacation 
-            every few years to traveling the world regularly—without winning the lottery 
-            or going into debt. This isn't for everyone, but if you're ready to transform 
-            how you travel, keep watching.
+            We're not influencers. We're not rich. But we travel more now than we ever 
+            imagined. In this short video, we'll show you what made it possible.
           </p>
           
           <div className="max-w-2xl mx-auto">
