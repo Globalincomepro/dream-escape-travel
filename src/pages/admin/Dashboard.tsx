@@ -5,6 +5,7 @@ import { PendingApplicationsTab } from "@/components/admin/PendingApplicationsTa
 import { ActiveAmbassadorsTab } from "@/components/admin/ActiveAmbassadorsTab";
 import { SystemOverviewTab } from "@/components/admin/SystemOverviewTab";
 import { SystemUrlsTab } from "@/components/admin/SystemUrlsTab";
+import { EmailCampaignsTab } from "@/components/admin/EmailCampaignsTab";
 import { Navigation } from "@/components/Navigation";
 import { Shield, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -37,11 +38,12 @@ const AdminDashboard = () => {
         </Card>
 
         <Tabs defaultValue="pending" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="pending">Pending Applications</TabsTrigger>
-            <TabsTrigger value="ambassadors">Active Ambassadors</TabsTrigger>
-            <TabsTrigger value="overview">System Overview</TabsTrigger>
-            <TabsTrigger value="urls">System URLs</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="pending">Applications</TabsTrigger>
+            <TabsTrigger value="ambassadors">Ambassadors</TabsTrigger>
+            <TabsTrigger value="emails">Email Campaigns</TabsTrigger>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="urls">URLs</TabsTrigger>
           </TabsList>
 
           <TabsContent value="pending">
@@ -50,6 +52,10 @@ const AdminDashboard = () => {
 
           <TabsContent value="ambassadors">
             <ActiveAmbassadorsTab />
+          </TabsContent>
+
+          <TabsContent value="emails">
+            <EmailCampaignsTab />
           </TabsContent>
 
           <TabsContent value="overview">

@@ -18,6 +18,7 @@ import SocialAnalytics from "./pages/ambassador/SocialAnalytics";
 import AdminDashboard from "./pages/admin/Dashboard";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
+import Unsubscribe from "./pages/Unsubscribe";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/pending" element={<Pending />} />
           <Route path="/f/:funnelSlug" element={<Funnel />} />
+          <Route path="/unsubscribe" element={<Unsubscribe />} />
           <Route 
             path="/my-leads" 
             element={

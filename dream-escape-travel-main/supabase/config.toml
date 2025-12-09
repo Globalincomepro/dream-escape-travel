@@ -1,0 +1,16 @@
+project_id = "lsstnraurqcskhhduldy"
+
+[functions.notify-admin-new-lead]
+verify_jwt = false
+
+[functions.send-welcome-email]
+verify_jwt = false
+
+[functions.process-scheduled-posts]
+verify_jwt = false
+
+[functions.track-social-click]
+verify_jwt = false
+
+[functions.send-social-post]
+verify_jwt = true

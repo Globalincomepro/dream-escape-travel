@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Mail, Phone, Calendar, Tag } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, Calendar, Tag, Inbox } from 'lucide-react';
 import { format } from 'date-fns';
+import { LeadEmailHistory } from '@/components/ambassador/LeadEmailHistory';
 
 interface Lead {
   id: string;
@@ -27,6 +28,8 @@ const MyLeads = () => {
   const navigate = useNavigate();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [showEmailHistory, setShowEmailHistory] = useState(false);
 
   useEffect(() => {
     fetchLeads();
@@ -110,12 +113,13 @@ const MyLeads = () => {
                   <TableHead>UTM Data</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Date</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {leads.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                       No leads yet. Share your funnel link to start capturing leads!
                     </TableCell>
                   </TableRow>
@@ -185,6 +189,19 @@ const MyLeads = () => {
                           {format(new Date(lead.created_at), 'MMM d, yyyy')}
                         </div>
                       </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedLead(lead);
+                            setShowEmailHistory(true);
+                          }}
+                        >
+                          <Inbox className="w-4 h-4 mr-1" />
+                          Emails
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))
                 )}
@@ -193,6 +210,19 @@ const MyLeads = () => {
           </div>
         </Card>
       </div>
+
+      {/* Email History Modal */}
+      {selectedLead && (
+        <LeadEmailHistory
+          leadEmail={selectedLead.email}
+          leadName={selectedLead.full_name}
+          isOpen={showEmailHistory}
+          onClose={() => {
+            setShowEmailHistory(false);
+            setSelectedLead(null);
+          }}
+        />
+      )}
     </div>
   );
 };
